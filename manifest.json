@@ -1,7 +1,7 @@
 {
     "name": "json-to-md-schema",
-    "version": "1.0.1",
-    "description": "Turn a JSON response or request into a Markdown table defining its schema",
+    "version": "1.0.2",
+    "description": "Turn a JSON response or request, or a COBOL file into a Markdown table defining its schema",
     "manifest_version": 2,
     "permissions": [
       "contextMenus"
@@ -12,7 +12,7 @@
           "default": "Ctrl+Shift+Z",
           "mac": "Command+Shift+Z"
         },
-        "description": "Call up the prompt for the translation function"
+        "description": "Call up the prompt for the JSON translation function"
       }
     },
     "background": {
