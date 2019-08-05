@@ -1,7 +1,7 @@
 {
     "name": "json-or-cobol-to-md-schema",
-    "version": "1.0.2",
-    "description": "Turn a JSON response or request, or a COBOL file into a Markdown table defining its schema",
+    "version": "1.0.3",
+    "description": "Turn a JSON response or request, or COBOL linkage & source code into a Markdown table defining its schema",
     "manifest_version": 2,
     "permissions": [
       "contextMenus"

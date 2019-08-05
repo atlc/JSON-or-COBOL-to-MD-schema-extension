@@ -36,6 +36,26 @@ function cobolToMarkdownSchema(cobolBody) {
     }
 }
 
+function linkageToMarkdownSchema(linkageBody) {
+    let linkageStr = linkageBody.toString();
+    if (linkageStr.match(/indexed\sby\s\w+-\w+.*/)) {
+        let markdownStr = `**Parameters**\n\n| Field | Required | Description/Type |\n| --- | --- | --- |\n`;
+        let linkageCodes = linkageStr.match(/indexed\sby\s\w+-\w+.*/)[0].replace(/10\slk/g, '').replace(/\s/g, '').split('\.');
+        linkageCodes = linkageCodes.filter(code => code.match(/^\$elkname\.*/));
+        linkageCodes.forEach(code => {
+            let fieldName = code.match(/=\w+/)[0].replace('=','');
+            let codeType = code.match(/pic\w/)[0].replace('pic','');
+            let dataType = (codeType == "9") ? "number" : (codeType == "x") ? "string" : `**Cannot infer from "PIC ${codeType}"**`;
+            markdownStr += `| ${fieldName} | **?¿?¿?** | ${dataType} |\n`;
+        });
+        if (confirm(`Copy to clipboard?\n\n${markdownStr}`)) {
+            copyToClipboard(markdownStr);
+        }
+    } else {
+        alert('You have selected an invalid linkage body');
+    }
+}
+
 function copyToClipboard(text) {
     let tempElement = document.createElement("textarea");
     document.body.appendChild(tempElement);
@@ -72,9 +92,16 @@ chrome.runtime.onInstalled.addListener(function() {
         title: "COBOL",
         contexts:["selection"]
     });
+
+    chrome.contextMenus.create({
+        id: "convert-LK",
+        parentId: "convert-parent-menu",
+        title: "Linkage",
+        contexts:["selection"]
+    });
 });
 
-chrome.contextMenus.onClicked.addListener(function(info, tab) {
+chrome.contextMenus.onClicked.addListener(info => {
     if (info.menuItemId == "convert-JSON") {
         jsonToMarkdownSchema(JSON.parse(info.selectionText));
     }
@@ -82,4 +109,8 @@ chrome.contextMenus.onClicked.addListener(function(info, tab) {
     if (info.menuItemId == "convert-COBOL") {
         cobolToMarkdownSchema(info.selectionText);
     }
+
+    if (info.menuItemId == "convert-LK" ) {
+        linkageToMarkdownSchema(info.selectionText);
+    }   
 });
