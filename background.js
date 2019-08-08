@@ -18,6 +18,23 @@ function jsonToMarkdownSchema(JSONbody) {
     }
 }
 
+function objectToMarkdownSchema(obj) {
+    try {
+        obj = JSON.parse(obj);
+        let markdownStr = `**Parameters**\n\n| Field | Required | Description/Type |\n| --- | --- | --- |\n`;
+        for (i=0; i < Object.keys(obj).length; i++) {
+            markdownStr += `| ${Object.keys(obj)[i]} | **?¿?¿?** | ${typeof Object.values(obj)[i]} |\n`;
+        }
+        if (confirm(`Copy to clipboard?\n\n${markdownStr}`)) {
+            copyToClipboard(markdownStr);
+        }
+    }    
+    catch {
+        alert('You have selected an invalid object');
+        return;
+    }
+}
+
 function cobolToMarkdownSchema(cobolBody) {
     let cobolString = cobolBody.toString();
     if (cobolString.match(/\w+-in\sidentified\sby/)) {
@@ -75,42 +92,37 @@ chrome.commands.onCommand.addListener(function(command) {
 chrome.runtime.onInstalled.addListener(function() {
     chrome.contextMenus.create({
         id: "convert-parent-menu",
-        title: "Convert highlighted JSON or COBOL to their schema in Markdown?",
+        title: "Convert to schema in Markdown?",
         contexts:["selection"]
     });
 
-    chrome.contextMenus.create({
-        id: "convert-JSON",
-        parentId: "convert-parent-menu",
-        title: "JSON",
-        contexts:["selection"]
-    });
-
-    chrome.contextMenus.create({
-        id: "convert-COBOL",
-        parentId: "convert-parent-menu",
-        title: "COBOL",
-        contexts:["selection"]
-    });
-
-    chrome.contextMenus.create({
-        id: "convert-LK",
-        parentId: "convert-parent-menu",
-        title: "Linkage",
-        contexts:["selection"]
-    });
+    let submenus = [
+        { "id": "convert-JSON",         "text": "{ \"Request\":  { \"endpointName\": { \"records\": [ { \"keyId\": 6789998212 } } } }" },
+        { "id": "convert-bare-object",  "text": "{ \"keyId\": 6789998212,   \"field2\": \"value2\" }" },
+        { "id": "convert-COBOL",        "text": "RESTendpoint.CBL" },
+        { "id": "convert-LK",           "text": "LINKAGE.LK" }
+    ]
+    
+    for (let i=0; i < submenus.length; i++) {
+        chrome.contextMenus.create({
+            id: submenus[i].id,
+            parentId: "convert-parent-menu",
+            title: submenus[i].text,
+            contexts:["selection"]
+        });
+    }
 });
 
 chrome.contextMenus.onClicked.addListener(info => {
-    if (info.menuItemId == "convert-JSON") {
-        jsonToMarkdownSchema(JSON.parse(info.selectionText));
+    switch (info.menuItemId) {
+        case "convert-JSON": jsonToMarkdownSchema(JSON.parse(info.selectionText));
+            break;
+        case "convert-bare-object": objectToMarkdownSchema(info.selectionText);
+            break;
+        case "convert-COBOL": cobolToMarkdownSchema(info.selectionText);
+            break;
+        case "convert-LK": linkageToMarkdownSchema(info.selectionText);
+            break;
+        default: break;
     }
-
-    if (info.menuItemId == "convert-COBOL") {
-        cobolToMarkdownSchema(info.selectionText);
-    }
-
-    if (info.menuItemId == "convert-LK" ) {
-        linkageToMarkdownSchema(info.selectionText);
-    }   
 });
