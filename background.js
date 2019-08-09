@@ -117,7 +117,7 @@ chrome.contextMenus.onClicked.addListener(info => {
     switch (info.menuItemId) {
         case "convert-JSON": jsonToMarkdownSchema(JSON.parse(info.selectionText));
             break;
-        case "convert-bare-object": objectToMarkdownSchema(info.selectionText);
+        case "convert-bare-object": objectToMarkdownSchema(JSON.stringify(info.selectionText));
             break;
         case "convert-COBOL": cobolToMarkdownSchema(info.selectionText);
             break;
