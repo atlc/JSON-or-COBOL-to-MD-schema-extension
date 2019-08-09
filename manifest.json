@@ -1,6 +1,6 @@
 {
     "name": "json-or-cobol-to-md-schema",
-    "version": "1.0.4",
+    "version": "1.0.5",
     "description": "Turn JSON Res or Req bodies, COBOL files (.CBL or .LK), or bare JSON objects into a Markdown table defining its schema",
     "manifest_version": 2,
     "permissions": [
