@@ -10,7 +10,7 @@ function jsonToMarkdownSchema(JSONbody) {
 
     let markdownStr = `**Parameters**\n\n| Field | Required | Description/Type |\n| --- | --- | --- |\n`;
     for (i=0; i < Object.keys(records).length; i++) {
-        markdownStr += `| ${Object.keys(records)[i]} | **?¿?¿?** | ${typeof Object.values(records)[i]} |\n`;
+        markdownStr += `| ${Object.keys(records)[i]} | ❌ | ${typeof Object.values(records)[i]} |\n`;
     }
 
     if (confirm(`Copy to clipboard?\n\n${markdownStr}`)) {
@@ -23,7 +23,7 @@ function objectToMarkdownSchema(obj) {
         obj = JSON.parse(obj);
         let markdownStr = `**Parameters**\n\n| Field | Required | Description/Type |\n| --- | --- | --- |\n`;
         for (i=0; i < Object.keys(obj).length; i++) {
-            markdownStr += `| ${Object.keys(obj)[i]} | **?¿?¿?** | ${typeof Object.values(obj)[i]} |\n`;
+            markdownStr += `| ${Object.keys(obj)[i]} | ❌ | ${typeof Object.values(obj)[i]} |\n`;
         }
         if (confirm(`Copy to clipboard?\n\n${markdownStr}`)) {
             copyToClipboard(markdownStr);
@@ -39,11 +39,11 @@ function cobolToMarkdownSchema(cobolBody) {
     let cobolString = cobolBody.toString();
     if (cobolString.match(/\w+-in\sidentified\sby/)) {
         let markdownStr = `**Parameters**\n\n| Field | Required | Description/Type |\n| --- | --- | --- |\n`;
-        let inputVariables = cobolString.match(/\w+-in\s+pic\s(x|\d)/g);
+        let inputVariables = cobolString.match(/\w+-in\s+pic\s(x|(s|S)?\d)/g);
         inputVariables.forEach(line => {
             let parsed = line.split(/-in\s+pic\s/g);
-            let dataType = (parsed[1] == "9") ? "number" : (parsed[1] == "x") ? "string" : `**Cannot infer from "PIC ${parsed[1]}"**`;
-            markdownStr += `| ${parsed[0]} | **?¿?¿?** | ${dataType} |\n`;
+            let dataType = (parsed[1] == "9" || parsed[1][1] == "9") ? "number" : (parsed[1] == "x") ? "string" : `**Cannot infer from "PIC ${parsed[1]}"**`;
+            markdownStr += `| ${parsed[0]} | ❌ | ${dataType} |\n`;
         });
         if (confirm(`Copy to clipboard?\n\n${markdownStr}`)) {
             copyToClipboard(markdownStr);
@@ -63,7 +63,7 @@ function linkageToMarkdownSchema(linkageBody) {
             let fieldName = code.match(/=\w+/)[0].replace('=','');
             let codeType = code.match(/pic\w/)[0].replace('pic','');
             let dataType = (codeType == "9") ? "number" : (codeType == "x") ? "string" : `**Cannot infer from "PIC ${codeType}"**`;
-            markdownStr += `| ${fieldName} | **?¿?¿?** | ${dataType} |\n`;
+            markdownStr += `| ${fieldName} | ❌ | ${dataType} |\n`;
         });
         if (confirm(`Copy to clipboard?\n\n${markdownStr}`)) {
             copyToClipboard(markdownStr);
@@ -99,8 +99,8 @@ chrome.runtime.onInstalled.addListener(function() {
     let submenus = [
         { "id": "convert-JSON",         "text": "{ \"Request\":  { \"endpointName\": { \"records\": [ { \"keyId\": 6789998212 } } } }" },
         { "id": "convert-bare-object",  "text": "{ \"keyId\": 6789998212,   \"field2\": \"value2\" }" },
-        { "id": "convert-COBOL",        "text": "RESTendpoint.CBL" },
-        { "id": "convert-LK",           "text": "LINKAGE.LK" }
+        { "id": "convert-COBOL",        "text": "request-varin identified by \"Request\".     (CobolSource.CBL)" },
+        { "id": "convert-LK",           "text": "$elk name=endpointName                       (CobolLinkage.LK)" }
     ]
     
     for (let i=0; i < submenus.length; i++) {
