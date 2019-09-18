@@ -10,7 +10,7 @@ function jsonToMarkdownSchema(JSONbody) {
 
     let markdownStr = `**Parameters**\n\n| Field | Required | Description/Type |\n| --- | :---: | :---: |\n`;
     for (i=0; i < Object.keys(records).length; i++) {
-        markdownStr += `| ${Object.keys(records)[i]} | ❌ | ${typeof Object.values(records)[i]} |\n`;
+        markdownStr += `| ${Object.keys(records)[i]} | ✔️❌ | ${typeof Object.values(records)[i]} |\n`;
     }
 
     if (confirm(`Copy to clipboard?\n\n${markdownStr}`)) {
@@ -20,10 +20,10 @@ function jsonToMarkdownSchema(JSONbody) {
 
 function objectToMarkdownSchema(obj) {
     try {
-        obj = JSON.parse(obj);
+        obj = JSON.parse(JSON.stringify(obj));
         let markdownStr = `**Parameters**\n\n| Field | Required | Description/Type |\n| --- | :---: | :---: |\n`;
         for (i=0; i < Object.keys(obj).length; i++) {
-            markdownStr += `| ${Object.keys(obj)[i]} | ❌ | ${typeof Object.values(obj)[i]} |\n`;
+            markdownStr += `| ${Object.keys(obj)[i]} | ✔️❌ | ${typeof Object.values(obj)[i]} |\n`;
         }
         if (confirm(`Copy to clipboard?\n\n${markdownStr}`)) {
             copyToClipboard(markdownStr);
@@ -43,7 +43,7 @@ function cobolToMarkdownSchema(cobolBody) {
         inputVariables.forEach(line => {
             let parsed = line.split(/-in\s+pic\s/g);
             let dataType = (parsed[1] == "9" || parsed[1][1] == "9") ? "number" : (parsed[1] == "x") ? "string" : `**Cannot infer from "PIC ${parsed[1]}"**`;
-            markdownStr += `| ${parsed[0]} | ❌ | ${dataType} |\n`;
+            markdownStr += `| ${parsed[0]} | ✔️❌ | ${dataType} |\n`;
         });
         if (confirm(`Copy to clipboard?\n\n${markdownStr}`)) {
             copyToClipboard(markdownStr);
@@ -63,7 +63,7 @@ function linkageToMarkdownSchema(linkageBody) {
             let fieldName = code.match(/=\w+/)[0].replace('=','');
             let codeType = code.match(/pic\w/)[0].replace('pic','');
             let dataType = (codeType == "9") ? "number" : (codeType == "x") ? "string" : `**Cannot infer from "PIC ${codeType}"**`;
-            markdownStr += `| ${fieldName} | ❌ | ${dataType} |\n`;
+            markdownStr += `| ${fieldName} | ✔️❌ | ${dataType} |\n`;
         });
         if (confirm(`Copy to clipboard?\n\n${markdownStr}`)) {
             copyToClipboard(markdownStr);
@@ -117,7 +117,7 @@ chrome.contextMenus.onClicked.addListener(info => {
     switch (info.menuItemId) {
         case "convert-JSON": jsonToMarkdownSchema(JSON.parse(info.selectionText));
             break;
-        case "convert-bare-object": objectToMarkdownSchema(JSON.stringify(info.selectionText));
+        case "convert-bare-object": objectToMarkdownSchema(JSON.parse(info.selectionText));
             break;
         case "convert-COBOL": cobolToMarkdownSchema(info.selectionText);
             break;
