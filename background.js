@@ -8,7 +8,7 @@ function jsonToMarkdownSchema(JSONbody) {
         return;
     }
 
-    let markdownStr = `**Parameters**\n\n| Field | Required | Description/Type |\n| --- | --- | --- |\n`;
+    let markdownStr = `**Parameters**\n\n| Field | Required | Description/Type |\n| --- | :---: | :---: |\n`;
     for (i=0; i < Object.keys(records).length; i++) {
         markdownStr += `| ${Object.keys(records)[i]} | ❌ | ${typeof Object.values(records)[i]} |\n`;
     }
@@ -21,7 +21,7 @@ function jsonToMarkdownSchema(JSONbody) {
 function objectToMarkdownSchema(obj) {
     try {
         obj = JSON.parse(obj);
-        let markdownStr = `**Parameters**\n\n| Field | Required | Description/Type |\n| --- | --- | --- |\n`;
+        let markdownStr = `**Parameters**\n\n| Field | Required | Description/Type |\n| --- | :---: | :---: |\n`;
         for (i=0; i < Object.keys(obj).length; i++) {
             markdownStr += `| ${Object.keys(obj)[i]} | ❌ | ${typeof Object.values(obj)[i]} |\n`;
         }
@@ -38,7 +38,7 @@ function objectToMarkdownSchema(obj) {
 function cobolToMarkdownSchema(cobolBody) {
     let cobolString = cobolBody.toString();
     if (cobolString.match(/\w+-in\sidentified\sby/)) {
-        let markdownStr = `**Parameters**\n\n| Field | Required | Description/Type |\n| --- | --- | --- |\n`;
+        let markdownStr = `**Parameters**\n\n| Field | Required | Description/Type |\n| --- | :---: | :---: |\n`;
         let inputVariables = cobolString.match(/\w+-in\s+pic\s(x|(s|S)?\d)/g);
         inputVariables.forEach(line => {
             let parsed = line.split(/-in\s+pic\s/g);
@@ -56,7 +56,7 @@ function cobolToMarkdownSchema(cobolBody) {
 function linkageToMarkdownSchema(linkageBody) {
     let linkageStr = linkageBody.toString();
     if (linkageStr.match(/indexed\sby\s\w+-\w+.*/)) {
-        let markdownStr = `**Parameters**\n\n| Field | Required | Description/Type |\n| --- | --- | --- |\n`;
+        let markdownStr = `**Parameters**\n\n| Field | Required | Description/Type |\n| --- | :---: | :---: |\n`;
         let linkageCodes = linkageStr.match(/indexed\sby\s\w+-\w+.*/)[0].replace(/10\slk/g, '').replace(/\s/g, '').split('\.');
         linkageCodes = linkageCodes.filter(code => code.match(/^\$elkname\.*/));
         linkageCodes.forEach(code => {
