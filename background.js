@@ -21,9 +21,9 @@ function jsonToMarkdownSchema(JSONbody) {
 function objectToMarkdownSchema(obj) {
     try {
         obj = JSON.parse(JSON.stringify(obj));
-        let markdownStr = `**Parameters**\n\n| Field | Required | Description/Type |\n| --- | :---: | :---: |\n`;
+        let markdownStr = ``;
         for (i=0; i < Object.keys(obj).length; i++) {
-            markdownStr += `| ${Object.keys(obj)[i]} | ✔️❌ | ${typeof Object.values(obj)[i]} |\n`;
+            markdownStr += `| **↳** ${Object.keys(obj)[i]} | ✔️❌ | ${typeof Object.values(obj)[i]} |\n`;
         }
         if (confirm(`Copy to clipboard?\n\n${markdownStr}`)) {
             copyToClipboard(markdownStr);
